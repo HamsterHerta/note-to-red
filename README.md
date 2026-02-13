@@ -4,11 +4,11 @@
 > 一键将 Obsidian 笔记转换为小红书图片的插件。
 
 > [!note]
-- 原项目：[note-to-red](https://github.com/Yeban8090/note-to-red)
-- 新增功能：
-  - 自定义封面页
-  - 页眉修改
-  - 开启关闭页眉
+> - 原项目：[note-to-red](https://github.com/Yeban8090/note-to-red)
+> - 新增功能：
+>   - 自定义封面页
+>   - 页眉修改
+>   - 开启关闭页眉
 
 
 ## 功能演示
