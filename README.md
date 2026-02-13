@@ -46,7 +46,7 @@
 6. 点击安装并启用插件
 
 ### 手动安装
-1. 下载最新版本的 release 文件: https://github.com/Yeban8090/note-to-red/releases
+1. 下载最新版本的 release 文件: https://github.com/HamsterHerta/note-to-red/releases
 2. 解压后将文件夹复制到 Obsidian 插件目录：`{vault}/.obsidian/plugins/`
 3. 重启 Obsidian
 4. 在设置中启用插件
