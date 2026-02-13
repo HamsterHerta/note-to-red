@@ -3,6 +3,14 @@
 
 > 一键将 Obsidian 笔记转换为小红书图片的插件。
 
+> [!note]
+- 原项目：[note-to-red](https://github.com/Yeban8090/note-to-red)
+- 新增功能：
+  - 自定义封面页
+  - 页眉修改
+  - 开启关闭页眉
+
+
 ## 功能演示
 <!-- 插图展示 -->
 <p align="center">
@@ -45,8 +53,10 @@
 
 ## 使用技巧
 - 在设置中选择适合的标题级别(一级#或二级##)来分割不同的图片内容
+- 开启`一级标题封面导出`后，以及标题默认为封面页，二级标题用于分割
 - 一级标题适合大章节分割，二级标题适合小章节分割
 - 调整字号大小以适应不同长度的内容
+- 可以自定义页眉样式
 - 可以自定义头像和用户信息
 - 支持实时预览和编辑
 - 提供多种模板以适应不同场景
@@ -58,30 +68,6 @@
 ## 支持的语言
 插件界面目前支持：
 - 简体中文
-
-## 支持作者
-如果这个插件对你有所帮助，可以考虑请作者喝杯咖啡 ☕：
-
-<div align="center">
-  <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-    <div style="text-align: center; margin: 1px;">
-      <strong>微信支付</strong><br/>
-      <img src="src/assets/donate/wechat_pay.png" alt="微信支付" width="180px" style="margin-top: 10px;">
-    </div>
-    <div style="text-align: center; margin: 1px;">
-      <strong>支付宝</strong><br/>
-      <img src="src/assets/donate/alipay.png" alt="支付宝" width="180px" style="margin-top: 10px;">
-    </div>
-    <div style="text-align: center; margin: 1px;">
-      <strong>Buy Me a Coffee</strong><br/>
-      <a href="https://ko-fi.com/bruceyeban" style="margin-top: 10px; display: inline-block;">
-        <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-支持作者-yellow?style=for-the-badge&logo=ko-fi" alt="Buy Me a Coffee" />
-      </a>
-    </div>
-  </div>
-</div>
-
-您的支持是我持续改进这个插件的动力！
 
 ## 许可证
 MIT License。查看 [LICENSE](LICENSE) 获取更多信息。
