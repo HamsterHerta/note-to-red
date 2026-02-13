@@ -159,6 +159,8 @@ export class ThemeManager {
             });
         }
 
+        this.applyHeaderCustomSettings(element);
+
         // 应用页脚样式
         const footer = element.querySelector('.red-preview-footer');
         if (footer) {
@@ -288,6 +290,8 @@ export class ThemeManager {
                 }
             }
         });
+
+        this.applyCoverCustomSettings(element);
     }
 
     // 移除不再需要的方法
@@ -297,6 +301,86 @@ export class ThemeManager {
 
     public setFontSize(size: number) {
         this.currentFontSize = size;
+    }
+
+    private applyHeaderCustomSettings(element: HTMLElement): void {
+        const settings = this.settingsManager.getSettings();
+        const header = element.querySelector('.red-preview-header') as HTMLElement | null;
+        if (!header) return;
+
+        if (settings.showHeader === false) {
+            header.style.display = 'none';
+            return;
+        }
+
+        header.style.display = '';
+        const headerCustom = settings.headerCustomSettings;
+        if (!headerCustom) return;
+
+        if (headerCustom.backgroundColor) {
+            header.style.backgroundColor = headerCustom.backgroundColor;
+        }
+        if (headerCustom.paddingTop >= 0) {
+            header.style.paddingTop = `${headerCustom.paddingTop}px`;
+        }
+        if (headerCustom.paddingBottom >= 0) {
+            header.style.paddingBottom = `${headerCustom.paddingBottom}px`;
+        }
+
+        if (headerCustom.avatarSize > 0) {
+            header.querySelectorAll('.red-user-avatar').forEach(el => {
+                const avatarEl = el as HTMLElement;
+                avatarEl.style.width = `${headerCustom.avatarSize}px`;
+                avatarEl.style.height = `${headerCustom.avatarSize}px`;
+            });
+        }
+        if (headerCustom.userNameSize > 0) {
+            header.querySelectorAll('.red-user-name').forEach(el => {
+                (el as HTMLElement).style.fontSize = `${headerCustom.userNameSize}px`;
+            });
+        }
+        if (headerCustom.userIdSize > 0) {
+            header.querySelectorAll('.red-user-id').forEach(el => {
+                (el as HTMLElement).style.fontSize = `${headerCustom.userIdSize}px`;
+            });
+        }
+        if (headerCustom.timeSize > 0) {
+            header.querySelectorAll('.red-post-time').forEach(el => {
+                (el as HTMLElement).style.fontSize = `${headerCustom.timeSize}px`;
+            });
+        }
+    }
+
+    private applyCoverCustomSettings(element: HTMLElement): void {
+        const settings = this.settingsManager.getSettings();
+        const coverSettings = settings.coverExportSettings;
+        if (!coverSettings?.enabled) return;
+
+        const coverSections = element.querySelectorAll('.red-cover-section') as NodeListOf<HTMLElement>;
+        coverSections.forEach(section => {
+            const align = coverSettings.textAlign || 'center';
+            section.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, blockquote').forEach(el => {
+                const htmlEl = el as HTMLElement;
+                htmlEl.style.color = coverSettings.textColor || htmlEl.style.color;
+                htmlEl.style.textAlign = align;
+                if (coverSettings.fontFamily) {
+                    htmlEl.style.fontFamily = coverSettings.fontFamily;
+                }
+            });
+
+            const mainTitle = section.querySelector('h1') as HTMLElement | null;
+            if (mainTitle) {
+                mainTitle.style.fontSize = `${Math.max(20, Number(coverSettings.fontSize) || 84)}px`;
+                mainTitle.style.fontWeight = `${Math.max(100, Math.min(900, Number(coverSettings.fontWeight) || 700))}`;
+                if (coverSettings.fontFamily) {
+                    mainTitle.style.fontFamily = coverSettings.fontFamily;
+                }
+            }
+
+            const padding = Math.max(0, Number(coverSettings.padding) || 96);
+            section.style.padding = `${padding}px`;
+            section.style.boxSizing = 'border-box';
+        });
     }
 }
 

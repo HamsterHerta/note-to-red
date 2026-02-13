@@ -19,3 +19,6 @@ styles.css
 
 # Obsidian
 .obsidian/
+
+# YoYo AI version control directory
+.yoyo/

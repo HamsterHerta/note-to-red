@@ -14,15 +14,24 @@ export class RedConverter {
         const settings = this.plugin?.settingsManager?.getSettings();
         const headingLevel = settings?.headingLevel || 'h1';
         const headers = element.querySelectorAll(headingLevel);
-        return headers.length > 0;
+        if (headers.length > 0) return true;
+
+        if (settings?.coverExportSettings?.enabled) {
+            return element.querySelectorAll('h1').length > 0 || element.querySelectorAll('.red-cover-section').length > 0;
+        }
+
+        return false;
     }
 
     static formatContent(element: HTMLElement): void {
         const settings = this.plugin?.settingsManager?.getSettings();
         const headingLevel = settings?.headingLevel || 'h1';
         const headers = Array.from(element.querySelectorAll(headingLevel));
+        const coverSettings = settings?.coverExportSettings;
+        const firstLevelHeader = element.querySelector('h1');
         
-        if (headers.length === 0) {
+        const hasCoverSource = !!(coverSettings?.enabled && firstLevelHeader);
+        if (headers.length === 0 && !hasCoverSource) {
             element.empty();
             const tip = element.createEl('div', {
                 cls: 'red-empty-message',
@@ -77,9 +86,17 @@ export class RedConverter {
         const contentContainer = document.createElement('div');
         contentContainer.className = 'red-content-container';
         
-        // 处理每个二级标题及其内容
+        // 封面与正文使用同一 section 生成逻辑
+        if (coverSettings?.enabled && firstLevelHeader) {
+            const coverSection = this.createContentSection(firstLevelHeader, 'cover', true);
+            if (coverSection) contentContainer.appendChild(coverSection);
+        }
+
         headers.forEach((header, index) => {
-            const section = this.createContentSection(header, index);
+            if (coverSettings?.enabled && headingLevel === 'h1' && header === firstLevelHeader) {
+                return;
+            }
+            const section = this.createContentSection(header, index.toString(), false);
             if (section) {
                 contentContainer.appendChild(section);
             }
@@ -104,17 +121,23 @@ export class RedConverter {
         element.dispatchEvent(copyEvent);
     }
 
-        private static createContentSection(header: Element, index: number): HTMLElement | null {
+    private static createContentSection(
+        header: Element,
+        index: string,
+        isCoverSection: boolean = false
+    ): HTMLElement | null {
         const settings = this.plugin?.settingsManager?.getSettings();
         const headingLevel = settings?.headingLevel || 'h1';
+        const stopHeadingTag = isCoverSection ? 'H1' : headingLevel.toUpperCase();
         
         // 获取当前标题到下一个标题之间的所有内容
         let content: Element[] = [];
-        let current = header.nextElementSibling;
-        
-        while (current && current.tagName !== headingLevel.toUpperCase()) {
-            content.push(current.cloneNode(true) as Element);
-            current = current.nextElementSibling;
+        if (!isCoverSection) {
+            let current = header.nextElementSibling;
+            while (current && current.tagName !== stopHeadingTag) {
+                content.push(current.cloneNode(true) as Element);
+                current = current.nextElementSibling;
+            }
         }
 
         // 检查内容中是否有水平分割线
@@ -137,12 +160,12 @@ export class RedConverter {
             }
         });
         
-        // 如果只有一个页面，按原来的方式处理
-        if (pages.length === 1 && !content.some(el => el.tagName === 'HR')) {
+        // 封面按单页逻辑，和正文结构保持一致
+        if (isCoverSection || (pages.length === 1 && !content.some(el => el.tagName === 'HR'))) {
             // 创建内容区域
             const section = document.createElement('section');
-            section.className = 'red-content-section';
-            section.setAttribute('data-index', index.toString());
+            section.className = `red-content-section${isCoverSection ? ' red-cover-section' : ''}`;
+            section.setAttribute('data-index', index);
             
             // 添加标题
             section.appendChild(header.cloneNode(true));

@@ -20,6 +20,12 @@ export class NotesTemplate implements ImgTemplate {
         sections.forEach(() => {
             const header = element.querySelector('.red-preview-header');
             if (header) {
+                if (this.settingsManager.getSettings().showHeader === false) {
+                    (header as HTMLElement).style.display = 'none';
+                    return;
+                }
+
+                (header as HTMLElement).style.display = '';
                 header.empty();
                 header.addClass('red-notes-header');
                 const headerBar = header.createEl('div', { cls: 'red-notes-bar' });

@@ -204,6 +204,20 @@ export class RedSettingTab extends PluginSettingTab {
 
         // 添加页脚显示设置
         new Setting(themeVisibilityContent)
+            .setName('是否显示页眉')
+            .setDesc('控制是否在导出图中显示页眉')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settingsManager.getSettings().showHeader !== false)
+                .onChange(async (value) => {
+                    await this.plugin.settingsManager.updateSettings({
+                        showHeader: value
+                    });
+                    new Notice('请重启 Obsidian 或重新加载以使更改生效');
+                })
+            );
+
+        // 添加页脚显示设置
+        new Setting(themeVisibilityContent)
             .setName('是否显示页脚')
             .setDesc('控制是否在主题中显示页脚部分')
             .addToggle(toggle => toggle
@@ -215,6 +229,274 @@ export class RedSettingTab extends PluginSettingTab {
                     new Notice('请重启 Obsidian 或重新加载以使更改生效');
                 })
             );
+
+        themeVisibilityContent.createEl('hr', { cls: 'red-settings-divider' });
+
+        const headerSettings = this.plugin.settingsManager.getSettings().headerCustomSettings;
+        new Setting(themeVisibilityContent)
+            .setName('页眉背景色')
+            .setDesc('自定义页眉区域背景色')
+            .addColorPicker(color => color
+                .setValue(headerSettings.backgroundColor || '#ffffff')
+                .onChange(async (value) => {
+                    await this.plugin.settingsManager.updateSettings({
+                        headerCustomSettings: {
+                            ...this.plugin.settingsManager.getSettings().headerCustomSettings,
+                            backgroundColor: value
+                        }
+                    });
+                }));
+
+        new Setting(themeVisibilityContent)
+            .setName('页眉上边距(px)')
+            .addText(text => text
+                .setPlaceholder('留空为主题默认')
+                .setValue(headerSettings.paddingTop >= 0 ? String(headerSettings.paddingTop) : '')
+                .onChange(async (value) => {
+                    const nextValue = value.trim() === ''
+                        ? -1
+                        : Math.max(0, Number(value) || 0);
+                    await this.plugin.settingsManager.updateSettings({
+                        headerCustomSettings: {
+                            ...this.plugin.settingsManager.getSettings().headerCustomSettings,
+                            paddingTop: nextValue
+                        }
+                    });
+                }));
+
+        new Setting(themeVisibilityContent)
+            .setName('页眉下边距(px)')
+            .addText(text => text
+                .setPlaceholder('留空为主题默认')
+                .setValue(headerSettings.paddingBottom >= 0 ? String(headerSettings.paddingBottom) : '')
+                .onChange(async (value) => {
+                    const nextValue = value.trim() === ''
+                        ? -1
+                        : Math.max(0, Number(value) || 0);
+                    await this.plugin.settingsManager.updateSettings({
+                        headerCustomSettings: {
+                            ...this.plugin.settingsManager.getSettings().headerCustomSettings,
+                            paddingBottom: nextValue
+                        }
+                    });
+                }));
+
+        new Setting(themeVisibilityContent)
+            .setName('头像尺寸(px)')
+            .addText(text => text
+                .setPlaceholder('留空为主题默认')
+                .setValue(headerSettings.avatarSize > 0 ? String(headerSettings.avatarSize) : '')
+                .onChange(async (value) => {
+                    const nextValue = value.trim() === ''
+                        ? 0
+                        : Math.max(20, Number(value) || 40);
+                    await this.plugin.settingsManager.updateSettings({
+                        headerCustomSettings: {
+                            ...this.plugin.settingsManager.getSettings().headerCustomSettings,
+                            avatarSize: nextValue
+                        }
+                    });
+                }));
+
+        new Setting(themeVisibilityContent)
+            .setName('用户名字号(px)')
+            .addText(text => text
+                .setPlaceholder('留空为主题默认')
+                .setValue(headerSettings.userNameSize > 0 ? String(headerSettings.userNameSize) : '')
+                .onChange(async (value) => {
+                    const nextValue = value.trim() === ''
+                        ? 0
+                        : Math.max(10, Number(value) || 16);
+                    await this.plugin.settingsManager.updateSettings({
+                        headerCustomSettings: {
+                            ...this.plugin.settingsManager.getSettings().headerCustomSettings,
+                            userNameSize: nextValue
+                        }
+                    });
+                }));
+
+        new Setting(themeVisibilityContent)
+            .setName('用户ID字号(px)')
+            .addText(text => text
+                .setPlaceholder('留空为主题默认')
+                .setValue(headerSettings.userIdSize > 0 ? String(headerSettings.userIdSize) : '')
+                .onChange(async (value) => {
+                    const nextValue = value.trim() === ''
+                        ? 0
+                        : Math.max(10, Number(value) || 14);
+                    await this.plugin.settingsManager.updateSettings({
+                        headerCustomSettings: {
+                            ...this.plugin.settingsManager.getSettings().headerCustomSettings,
+                            userIdSize: nextValue
+                        }
+                    });
+                }));
+
+        new Setting(themeVisibilityContent)
+            .setName('时间字号(px)')
+            .addText(text => text
+                .setPlaceholder('留空为主题默认')
+                .setValue(headerSettings.timeSize > 0 ? String(headerSettings.timeSize) : '')
+                .onChange(async (value) => {
+                    const nextValue = value.trim() === ''
+                        ? 0
+                        : Math.max(10, Number(value) || 13);
+                    await this.plugin.settingsManager.updateSettings({
+                        headerCustomSettings: {
+                            ...this.plugin.settingsManager.getSettings().headerCustomSettings,
+                            timeSize: nextValue
+                        }
+                    });
+                }));
+
+        const coverLayoutSection = containerEl.createDiv('red-settings-subsection');
+        const coverLayoutHeader = coverLayoutSection.createDiv('red-settings-subsection-header');
+        const coverLayoutToggle = coverLayoutHeader.createSpan('red-settings-subsection-toggle');
+        setIcon(coverLayoutToggle, 'chevron-right');
+        coverLayoutHeader.createEl('h3', { text: '封面排版' });
+        const coverLayoutContent = coverLayoutSection.createDiv('red-settings-subsection-content');
+        coverLayoutHeader.addEventListener('click', () => {
+            const isExpanded = !coverLayoutSection.hasClass('is-expanded');
+            coverLayoutSection.toggleClass('is-expanded', isExpanded);
+            setIcon(coverLayoutToggle, isExpanded ? 'chevron-down' : 'chevron-right');
+        });
+        // 封面排版默认折叠
+        coverLayoutSection.removeClass('is-expanded');
+        setIcon(coverLayoutToggle, 'chevron-right');
+
+        themeVisibilityContent.createEl('hr', { cls: 'red-settings-divider' });
+
+        const coverSettings = this.plugin.settingsManager.getSettings().coverExportSettings;
+        new Setting(coverLayoutContent)
+            .setName('开启一级标题封面导出')
+            .setDesc('启用后可以单独导出文档中的一级标题封面图')
+            .addToggle(toggle => toggle
+                .setValue(coverSettings.enabled)
+                .onChange(async (value) => {
+                    await this.plugin.settingsManager.updateSettings({
+                        coverExportSettings: {
+                            ...this.plugin.settingsManager.getSettings().coverExportSettings,
+                            enabled: value
+                        }
+                    });
+                    new Notice('封面导出设置已更新');
+                }));
+
+        new Setting(coverLayoutContent)
+            .setName('批量导出时包含封面')
+            .addToggle(toggle => toggle
+                .setValue(coverSettings.includeInBatchExport)
+                .onChange(async (value) => {
+                    await this.plugin.settingsManager.updateSettings({
+                        coverExportSettings: {
+                            ...this.plugin.settingsManager.getSettings().coverExportSettings,
+                            includeInBatchExport: value
+                        }
+                    });
+                }));
+
+        new Setting(coverLayoutContent)
+            .setName('封面文字颜色')
+            .addColorPicker(color => color
+                .setValue(coverSettings.textColor || '#ffffff')
+                .onChange(async (value) => {
+                    await this.plugin.settingsManager.updateSettings({
+                        coverExportSettings: {
+                            ...this.plugin.settingsManager.getSettings().coverExportSettings,
+                            textColor: value
+                        }
+                    });
+                }));
+
+        new Setting(coverLayoutContent)
+            .setName('封面字号(px)')
+            .addText(text => text
+                .setValue(String(coverSettings.fontSize))
+                .onChange(async (value) => {
+                    await this.plugin.settingsManager.updateSettings({
+                        coverExportSettings: {
+                            ...this.plugin.settingsManager.getSettings().coverExportSettings,
+                            fontSize: Math.max(20, Number(value) || 84)
+                        }
+                    });
+                }));
+
+        new Setting(coverLayoutContent)
+            .setName('封面字重')
+            .setDesc('推荐 400-900')
+            .addText(text => text
+                .setValue(String(coverSettings.fontWeight))
+                .onChange(async (value) => {
+                    await this.plugin.settingsManager.updateSettings({
+                        coverExportSettings: {
+                            ...this.plugin.settingsManager.getSettings().coverExportSettings,
+                            fontWeight: Math.max(100, Math.min(900, Number(value) || 700))
+                        }
+                    });
+                }));
+
+        new Setting(coverLayoutContent)
+            .setName('封面字体')
+            .setDesc('留空则跟随当前全局字体')
+            .addDropdown(dropdown => {
+                dropdown.addOption('', '跟随全局字体');
+                this.plugin.settingsManager.getFontOptions().forEach(font => {
+                    dropdown.addOption(font.value, font.label);
+                });
+                dropdown
+                    .setValue(coverSettings.fontFamily || '')
+                    .onChange(async (value) => {
+                        await this.plugin.settingsManager.updateSettings({
+                            coverExportSettings: {
+                                ...this.plugin.settingsManager.getSettings().coverExportSettings,
+                                fontFamily: value
+                            }
+                        });
+                    });
+                return dropdown;
+            });
+
+        new Setting(coverLayoutContent)
+            .setName('封面内边距(px)')
+            .addText(text => text
+                .setValue(String(coverSettings.padding))
+                .onChange(async (value) => {
+                    await this.plugin.settingsManager.updateSettings({
+                        coverExportSettings: {
+                            ...this.plugin.settingsManager.getSettings().coverExportSettings,
+                            padding: Math.max(0, Number(value) || 96)
+                        }
+                    });
+                }));
+
+        new Setting(coverLayoutContent)
+            .setName('封面对齐方式')
+            .addDropdown(dropdown => dropdown
+                .addOption('left', '左对齐')
+                .addOption('center', '居中')
+                .addOption('right', '右对齐')
+                .setValue(coverSettings.textAlign || 'center')
+                .onChange(async (value: 'left' | 'center' | 'right') => {
+                    await this.plugin.settingsManager.updateSettings({
+                        coverExportSettings: {
+                            ...this.plugin.settingsManager.getSettings().coverExportSettings,
+                            textAlign: value
+                        }
+                    });
+                }));
+
+        new Setting(coverLayoutContent)
+            .setName('封面文件名前缀')
+            .addText(text => text
+                .setValue(coverSettings.fileNamePrefix || '小红书封面')
+                .onChange(async (value) => {
+                    await this.plugin.settingsManager.updateSettings({
+                        coverExportSettings: {
+                            ...this.plugin.settingsManager.getSettings().coverExportSettings,
+                            fileNamePrefix: value.trim() || '小红书封面'
+                        }
+                    });
+                }));
    
         themeVisibilityContent.createEl('hr', { cls: 'red-settings-divider' });
 

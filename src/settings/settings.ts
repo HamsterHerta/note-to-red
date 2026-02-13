@@ -17,6 +17,7 @@ interface RedSettings {
     notesTitle: string;
     userId: string;
     showTime: boolean;
+    showHeader?: boolean;
     timeFormat: string;
     showFooter?: boolean;
     footerLeftText: string;
@@ -27,6 +28,26 @@ interface RedSettings {
         imageUrl: string;
         scale: number;
         position: { x: number; y: number };
+    };
+    headerCustomSettings: {
+        backgroundColor: string;
+        paddingTop: number;
+        paddingBottom: number;
+        avatarSize: number;
+        userNameSize: number;
+        userIdSize: number;
+        timeSize: number;
+    };
+    coverExportSettings: {
+        enabled: boolean;
+        includeInBatchExport: boolean;
+        textColor: string;
+        fontSize: number;
+        fontWeight: number;
+        fontFamily: string;
+        padding: number;
+        textAlign: 'left' | 'center' | 'right';
+        fileNamePrefix: string;
     };
 }
 
@@ -44,6 +65,7 @@ export const DEFAULT_SETTINGS: RedSettings = {
     notesTitle: '备忘录',
     userId: '@Yeban',
     showTime: true,
+    showHeader: true,
     timeFormat: 'zh-CN',
     headingLevel: 'h2', // 默认使用二级标题
     footerLeftText: '夜半过后，光明便启程',
@@ -79,6 +101,26 @@ export const DEFAULT_SETTINGS: RedSettings = {
         imageUrl: '',
         scale: 1,
         position: { x: 0, y: 0 }
+    },
+    headerCustomSettings: {
+        backgroundColor: '',
+        paddingTop: -1,
+        paddingBottom: -1,
+        avatarSize: 0,
+        userNameSize: 0,
+        userIdSize: 0,
+        timeSize: 0
+    },
+    coverExportSettings: {
+        enabled: false,
+        includeInBatchExport: false,
+        textColor: '#ffffff',
+        fontSize: 84,
+        fontWeight: 700,
+        fontFamily: '',
+        padding: 96,
+        textAlign: 'center',
+        fileNamePrefix: '小红书封面'
     },
 }
 

@@ -46,6 +46,12 @@ export class DefaultTemplate implements ImgTemplate {
     private createHeaderContent(headerArea: HTMLElement) {
         headerArea.empty();
         const settings = this.settingsManager.getSettings();
+        if (settings.showHeader === false) {
+            headerArea.style.display = 'none';
+            return;
+        }
+
+        headerArea.style.display = '';
         const userInfo = this.createUserInfoContainer(headerArea);
         
         this.createUserLeftSection(userInfo, settings);

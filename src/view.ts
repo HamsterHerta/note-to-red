@@ -391,7 +391,10 @@ export class RedView extends ItemView {
                 this.copyButton.setText('导出中...');
 
                 try {
-                    await DownloadManager.downloadAllImages(this.previewEl);
+                    await DownloadManager.downloadAllImages(
+                        this.previewEl,
+                        this.settingsManager.getSettings().coverExportSettings
+                    );
                     this.copyButton.setText('导出成功');
                 } catch (error) {
                     this.copyButton.setText('导出失败');
